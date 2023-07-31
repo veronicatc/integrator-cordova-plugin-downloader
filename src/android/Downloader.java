@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.Manifest;
+import android.os.Build;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,12 +66,16 @@ public class Downloader extends CordovaPlugin {
       downloadReceiverCallbackContext = callbackContext;
 
       if(action.equals("download")){
-          if(cordova.hasPermission(WRITE_EXTERNAL_STORAGE)){
-              download(args.getJSONObject(0), callbackContext);
-          }
-          else {
-              cordova.requestPermission(this, DOWNLOAD_ACTION_PERMISSION_REQ_CODE, WRITE_EXTERNAL_STORAGE);
-          }
+	  if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+		download(args.getJSONObject(0), callbackContext);
+	  }else{
+          	if(cordova.hasPermission(WRITE_EXTERNAL_STORAGE)){
+              		download(args.getJSONObject(0), callbackContext);
+          	}
+          	else {
+              		cordova.requestPermission(this, DOWNLOAD_ACTION_PERMISSION_REQ_CODE, WRITE_EXTERNAL_STORAGE);
+          	}
+	  }
       }
       else{
           callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.INVALID_ACTION));
